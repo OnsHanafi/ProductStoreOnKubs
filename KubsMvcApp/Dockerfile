@@ -4,19 +4,20 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+EXPOSE 3317
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["KubsMvcApp/KubsMvcApp.csproj", "KubsMvcApp/"]
-RUN dotnet restore "./KubsMvcApp/./KubsMvcApp.csproj"
+COPY "KubsMvcApp.csproj" .
+RUN dotnet restore "KubsMvcApp.csproj"
 COPY . .
-WORKDIR "/src/KubsMvcApp"
-RUN dotnet build "./KubsMvcApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src"
+RUN dotnet build . -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./KubsMvcApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "KubsMvcApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
