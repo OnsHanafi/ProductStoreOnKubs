@@ -21,7 +21,14 @@ spec:
          - name: "ASPNETCORE_ENVIRONMENT"
            value: "Development"
          - name: ConnectionStrings__ProductContext
-           value: Server=mssql-service;Database=ProductDB;User=SA;Password=@Aa123456; 
+           valueFrom:
+            secretKeyRef:
+             name:  mssql-secret
+             key: db-connection-string-secret
+#            configMapKeyRef:
+#             name: mssql-connection-configmap
+#             key: db-connection-string
+
 ---
 apiVersion: v1
 kind: Service
