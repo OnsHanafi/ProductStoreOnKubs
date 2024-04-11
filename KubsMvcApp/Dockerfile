@@ -6,6 +6,7 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 3317
 
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
