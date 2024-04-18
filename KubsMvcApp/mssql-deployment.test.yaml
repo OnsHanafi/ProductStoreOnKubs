@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mssql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mssql
+    spec:
+      terminationGracePeriodSeconds: 10
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: mssql
+        image: mcr.microsoft.com/mssql/rhel/server:2019-latest
+        securityContext:
+          runAsUser: 0
+        env:
+        - name: SQL_SERVER
+          value: "mssql-service"
+        - name: SQL_DATABASE
+          value: "ProductsDB"
+        - name: SQL_USER
+          value: "SA"
+        - name: SQL_PASSWORD
+          value: "@Aa123456"
+        volumeMounts:
+        - name: mssqldb
+          mountPath: /var/opt/mssql
+      volumes:
+      - name: mssqldb
+        persistentVolumeClaim:
+          claimName: mssql-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-service
+spec:
+  selector:
+    app: mssql
+  ports:
+    - protocol: TCP
+      port: 31433
+      targetPort: 1433
+  type: LoadBalancer

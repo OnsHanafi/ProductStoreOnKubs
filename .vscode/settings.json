@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "kubernetes://schema/v1%40service": "file:///c%3A/Users/Admin/source/repos/ProductStoreOnKubs/KubsMvcApp/mssql-deployment.local.yaml"
+    }
+}

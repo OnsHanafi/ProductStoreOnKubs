@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mvc-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: mvc
+  template:
+    metadata:
+      labels:
+        name: mvc
+    spec:
+      containers:
+      - image: onshanafi/productstoreonkubs:v1.0
+        name: mvc
+        ports:
+        - containerPort: 80
+        env:
+         - name: "ASPNETCORE_ENVIRONMENT"
+           value: "Development"
+         - name: ConnectionStrings__ProductContext
+           valueFrom:
+            secretKeyRef:
+             name:  mssql-secret
+             key: db-connection-string-secret
+#            configMapKeyRef:
+#             name: mssql-connection-configmap
+#             key: db-connection-string
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mvc-service
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    name: mvc
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+
